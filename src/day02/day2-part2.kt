@@ -17,7 +17,6 @@ fun main(args: Array<String>) {
             if (numDiffs == 1) {
                 println("Found answer: $answer first: $first, second: $second after looking at $cnt possibilities")
                 foundAnswer = true
-                return@forEachIndexed
             }
         }
     }
