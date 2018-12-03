@@ -38,11 +38,37 @@ fun claim(block: Claim.Builder.() -> Unit): Claim =
     Claim.Builder().apply(block).build()
 
 fun main(args: Array<String>) {
-    val lines = readFileIntoLines("/day03/small-input.txt")
+    //countOverlaps(readFileIntoLines("/day03/small-input.txt"), 20, 20)
+    countOverlaps(readFileIntoLines("/day03/input.txt"), 1000, 1000)
+}
+
+private fun countOverlaps(lines: List<String>, maxX: Int, maxY: Int) {
     val claims = lines.map {
         claim {
             input(it)
         }
     }
-    claims.forEach { println(it) }
+
+    // create our "cloth" array
+    val cloth = Array(maxX) { Array(maxY) { 0 } }
+
+    // go through out claims and add them to the list of claims for each square "inch"
+    claims.forEach { claim ->
+        println("Examining claim: $claim")
+        for (x in claim.x until claim.x + claim.width) {
+            for (y in claim.y until claim.y + claim.height) {
+                cloth[x][y]++
+            }
+        }
+    }
+
+    for (x in 0 until maxX) {
+        for (y in 0 until maxY) {
+            print("[${if (cloth[x][y] == 0) " " else cloth[x][y]}]")
+        }
+        println("")
+    }
+
+    val numOverlapInches = cloth.flatMap { it.asList() }.count { it > 1 }
+    println("numOverlapInches = $numOverlapInches")
 }
