@@ -7,6 +7,7 @@ fun main(args: Array<String>) {
     val elves: MutableMap<Int, Elf> = mutableMapOf()
     var currentElf: Elf? = null
     var startMinute = 0
+
     lines.forEach {
         //println(it)
         if (it.contains('#')) {
@@ -36,15 +37,11 @@ fun main(args: Array<String>) {
         .sortedByDescending { it.totalSleepTime() }
         .first()
 
-    // what minute did he sleep the most?
-    val (minute, _) = sleepiestElf.asleepTimes
-        .toList()
-        .sortedByDescending { (_, value) -> value }
-        .first()
+    val minute = sleepiestElf.greatestSleepMinute()
 
     println("sleepiestElf = $sleepiestElf, slept the most at $minute")
     val answer = sleepiestElf.id * minute
-    println("Answer to puzzle is $answer")
+    println("Answer (Strategy 1) to puzzle is $answer")
 
 }
 
@@ -67,5 +64,13 @@ data class Elf(val id: Int) {
 
     fun totalSleepTime(): Int {
         return asleepTimes.map { it.value }.sum()
+    }
+
+    fun greatestSleepMinute(): Int {
+        val (minute, _) = asleepTimes
+            .toList()
+            .sortedByDescending { (_, value) -> value }
+            .first()
+        return minute
     }
 }
