@@ -21,22 +21,22 @@ fun fullyReactPolymer(polymer: String): String {
         for (idx in 0 until polymer1.length - 1) {
             val first = polymer1[idx]
             val next = polymer1[idx + 1]
-            if (first.toLowerCase() == next.toLowerCase()) {
+            if (first.matches(next)) {
                 // found a match, remove it from the string
                 //println("Found $first$next")
-
-                // test for one upper & one lower
-                if (((first.isLowerCase() && next.isUpperCase()) ||
-                            first.isUpperCase() && next.isLowerCase())
-                ) {
-                    polymer1 = polymer1.substring(0, idx) + polymer1.substring(idx + 2)
-                    //println("Polymer after removing:             $polymer1")
-                    foundMatch = true
-                    break
-                }
+                polymer1 = polymer1.substring(0, idx) + polymer1.substring(idx + 2)
+                //println("Polymer after removing:             $polymer1")
+                foundMatch = true
+                break
             }
         }
         moreMatches = foundMatch
     }
     return polymer1
 }
+
+fun Char.matches(other: Char): Boolean =
+    when {
+        this.toLowerCase() != other.toLowerCase() -> false
+        else -> this != other
+    }
