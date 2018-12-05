@@ -6,22 +6,31 @@ fun main(args: Array<String>) {
     var polymer = readEntireFile("/day05/input.txt").trim()
     //var polymer = "dabAcCaCBAcCcaDA"
 
+    polymer = fullyReactPolymer(polymer)
+
+    println("Reached end, final polymer is $polymer")
+    println("With a length of ${polymer.length}")
+}
+
+fun fullyReactPolymer(polymer: String): String {
+    var polymer1 = polymer
     var moreMatches = true
 
-    while(moreMatches){
+    while (moreMatches) {
         var foundMatch = false
-        for( idx in 0 until polymer.length-1) {
-            val first = polymer[idx]
-            val next = polymer[idx + 1]
-            if(first.toLowerCase() == next.toLowerCase()) {
+        for (idx in 0 until polymer1.length - 1) {
+            val first = polymer1[idx]
+            val next = polymer1[idx + 1]
+            if (first.toLowerCase() == next.toLowerCase()) {
                 // found a match, remove it from the string
-                println("Found $first$next")
+                //println("Found $first$next")
 
                 // test for one upper & one lower
-                if(((first.isLowerCase() && next.isUpperCase()) ||
-                            first.isUpperCase() && next.isLowerCase())){
-                    polymer = polymer.substring(0, idx ) + polymer.substring(idx+2)
-                    println("Polymer after removing:             $polymer")
+                if (((first.isLowerCase() && next.isUpperCase()) ||
+                            first.isUpperCase() && next.isLowerCase())
+                ) {
+                    polymer1 = polymer1.substring(0, idx) + polymer1.substring(idx + 2)
+                    //println("Polymer after removing:             $polymer1")
                     foundMatch = true
                     break
                 }
@@ -29,7 +38,5 @@ fun main(args: Array<String>) {
         }
         moreMatches = foundMatch
     }
-
-    println("Reached end, final polymer is $polymer")
-    println("With a length of ${polymer.length}")
+    return polymer1
 }
