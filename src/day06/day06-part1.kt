@@ -3,30 +3,7 @@ package day06
 import readFileIntoLines
 
 fun main(args: Array<String>) {
-    val lines = readFileIntoLines("/day06/input.txt")
-    var name = 'A'
-    val points = lines.map {
-        val pair = it.parseToPair()
-        val namedPoint = NamedPoint(name++, pair)
-        println("Assigned name: ${namedPoint.name}")
-        namedPoint
-    }
-
-    println("points = $points")
-
-    // find the greatest number, we'll use that to build our grid
-    val max = points.flatMap { it.point.toList() }
-        .toList()
-        .max()!!
-
-    println("max = $max")
-
-    val grid = Array(max + 2) { Array(max + 2) { '.' } }
-
-    // add all the points to the grid
-    points.forEach {
-        grid[it.point.second][it.point.first] = it.name
-    }
+    val (points, grid) = readPuzzleInput("/day06/input.txt")
 
     printGrid(grid)
     println("------")
@@ -69,6 +46,34 @@ fun main(args: Array<String>) {
 
     println("greatestNonInfinity = $greatestNonInfinity, winningPoint = $winningPoint")
 
+}
+
+fun readPuzzleInput(file: String): Pair<List<NamedPoint>, Array<Array<Char>>> {
+    val lines = readFileIntoLines(file)
+    var name = 'A'
+    val points = lines.map {
+        val pair = it.parseToPair()
+        val namedPoint = NamedPoint(name++, pair)
+        println("Assigned name: ${namedPoint.name}")
+        namedPoint
+    }
+
+    println("points = $points")
+
+    // find the greatest number, we'll use that to build our grid
+    val max = points.flatMap { it.point.toList() }
+        .toList()
+        .max()!!
+
+    println("max = $max")
+
+    val grid = Array(max + 2) { Array(max + 2) { '.' } }
+
+    // add all the points to the grid
+    points.forEach {
+        grid[it.point.second][it.point.first] = it.name
+    }
+    return Pair(points, grid)
 }
 
 fun manhattanDistance(x0: Int, x1: Int, y0: Int, y1: Int): Int {
