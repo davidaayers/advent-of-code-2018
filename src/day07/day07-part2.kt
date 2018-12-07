@@ -3,7 +3,7 @@ package day07
 fun main(args: Array<String>) {
     val allNodes = parsePuzzleInput("/day07/input.txt", 60)
 
-    // to start, find our node that has no parents, that's step 1
+    // to start, find our nodes that have no parents
     val nextTasks = allNodes.values
         .filter { it.parents.isEmpty() }
         .toSortedSet(Comparator { o1, o2 -> o1.name.compareTo(o2.name) })
@@ -33,7 +33,6 @@ fun main(args: Array<String>) {
                 nextTasks.sortedBy { it.name }
             }
         }
-
 
         // see if we have any elves available to work, this particular second
         val idleElves = elves.filter { it.currentTask == null }
