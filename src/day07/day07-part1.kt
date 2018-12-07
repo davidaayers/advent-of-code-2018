@@ -36,15 +36,15 @@ fun main(args: Array<String>) {
 
 }
 
-private fun parsePuzzleInput(fileName: String): MutableMap<String, Node> {
+fun parsePuzzleInput(fileName: String, initialSeconds: Int = 60): MutableMap<String, Node> {
     val lines = readFileIntoLines(fileName)
 
     val allNodes = mutableMapOf<String, Node>()
 
     lines.forEach {
         val (parentName, childName) = it.parseToPair()
-        val parent = allNodes.getOrPut(parentName) { Node(parentName) }
-        val child = allNodes.getOrPut(childName) { Node(childName) }
+        val parent = allNodes.getOrPut(parentName) { Node(parentName, initialSeconds) }
+        val child = allNodes.getOrPut(childName) { Node(childName, initialSeconds) }
         parent.children.add(child)
         child.parents.add(parent)
     }
@@ -58,13 +58,22 @@ fun String.parseToPair(): Pair<String, String> {
     return Pair(parent, child)
 }
 
-data class Node(val name: String) {
+data class Node(val name: String, val initialSeconds:Int = 60) {
     val parents: MutableList<Node> = mutableListOf()
     val children: MutableList<Node> = mutableListOf()
+    var secondsLeft: Int = secondsToPerform()
+
+    fun secondsToPerform() : Int {
+        return initialSeconds + ( name[0] - 'A' + 1)
+    }
+
+    fun isDone() : Boolean {
+        return secondsLeft == 0
+    }
 
     override fun toString(): String {
         val parentsStr = parents.map { it.name }.toList().joinToString()
         val childrenStr = children.map { it.name }.toList().joinToString()
-        return "$name: parents[$parentsStr] children[$childrenStr]"
+        return "$name: (${secondsToPerform()}:$secondsLeft) parents[$parentsStr] children[$childrenStr]"
     }
 }
