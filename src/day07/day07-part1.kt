@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
     val nextNodes = allNodes.values
         .filter { it.parents.isEmpty() }
         .sortedBy { it.name }
-        .toMutableList()
+        .toSortedSet(Comparator { o1, o2 -> o1.name.compareTo(o2.name) })
 
     println("nextNodes = $nextNodes")
 
@@ -25,8 +25,8 @@ fun main(args: Array<String>) {
 
         solutionList.add(nextNode)
         nextNodes.remove(nextNode)
-        nextNode.children.forEach { if (it !in nextNodes) nextNodes.add(it) }
-        nextNodes.sortBy { it.name }
+        nextNodes.addAll(nextNode.children)
+        nextNodes.sortedBy { it.name }
     }
 
     println("solutionList = $solutionList")
