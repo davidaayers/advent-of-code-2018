@@ -19,7 +19,6 @@ fun main(args: Array<String>) {
 
         // any elves that finished their task last minute should now be available for
         // new tasks
-        // elves with tasks should work on those tasks
         val workingElves = elves.filter { it.currentTask != null }
         for (it in workingElves) {
             val currentTask = it.currentTask!!
