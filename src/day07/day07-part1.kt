@@ -10,7 +10,6 @@ fun main(args: Array<String>) {
     // to start, find our node that has no parents, that's step 1
     val nextNodes = allNodes.values
         .filter { it.parents.isEmpty() }
-        .sortedBy { it.name }
         .toSortedSet(Comparator { o1, o2 -> o1.name.compareTo(o2.name) })
 
     println("nextNodes = $nextNodes")
