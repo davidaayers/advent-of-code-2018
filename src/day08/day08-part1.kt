@@ -36,14 +36,14 @@ fun parseNode(licenseParts: MutableList<Int>, nameGenerator: AtomicInteger): Nod
     val metadataCnt = licenseParts.removeAt(0)
     val node = Node(nameGenerator.nextName())
 
-    for (n in 0 until childrenCnt) {
-        val child = parseNode(licenseParts, nameGenerator)
-        node.children.add(child)
-    }
+    node.children = (0 until childrenCnt)
+        .map { parseNode(licenseParts, nameGenerator) }
+        .toList()
 
-    for (x in 0 until metadataCnt) {
-        node.metadata.add(licenseParts.removeAt(0))
-    }
+    node.metadata = (0 until metadataCnt)
+        .map { licenseParts.removeAt(0) }
+        .toList()
+
     return node
 }
 
@@ -52,22 +52,17 @@ fun AtomicInteger.nextName(): String {
 }
 
 data class Node(val name: String) {
-    val metadata: MutableList<Int> = mutableListOf()
-    val children: MutableList<Node> = mutableListOf()
+    var metadata: List<Int> = listOf()
+    var children: List<Node> = listOf()
 
     val allChildren: List<Node>
         get() = children + children.flatMap { it.allChildren }
 
     fun value(): Int {
         return when {
-            children.size == 0 -> metadata.sum()
-            else -> {
-                return metadata.map {
-                    when {
-                        it == 0 || it > children.size -> 0
-                        else -> children[it-1].value()
-                    }
-                }.sum()
+            children.isEmpty() -> metadata.sum()
+            else -> metadata.sumBy {
+                children.getOrNull(it - 1)?.value() ?: 0
             }
         }
     }
