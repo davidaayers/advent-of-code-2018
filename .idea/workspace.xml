@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0d7852c2-32b8-46db-994f-09fe92f5ace4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/src/day08/day08-part1.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/day08/day08-part1.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/day08/input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/day08/input.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/day08/day08-part1.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="40" selection-start-line="15" selection-start-column="40" selection-end-line="15" selection-end-column="40" />
+            <state relative-caret-position="102">
+              <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
               <folding>
                 <element signature="e#15#88#0" expanded="true" />
               </folding>
@@ -31,15 +30,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="499">
               <caret line="97" selection-start-line="97" selection-end-line="97" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/day08/input.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="32412" selection-start-column="32412" selection-end-column="32412" />
             </state>
           </provider>
         </entry>
@@ -280,12 +270,12 @@
       <workItem from="1543688072615" duration="17612000" />
       <workItem from="1544282607526" duration="277000" />
       <workItem from="1544282983763" duration="223000" />
-      <workItem from="1544283219920" duration="2204000" />
+      <workItem from="1544283219920" duration="3037000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29297000" />
+    <option name="totallyTimeSpent" value="30130000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
@@ -332,9 +322,9 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/day08/day08-part1.kt</url>
-          <line>32</line>
+          <line>66</line>
           <properties />
-          <option name="timeStamp" value="2" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -567,8 +557,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/day08/day08-part1.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="40" selection-start-line="15" selection-start-column="40" selection-end-line="15" selection-end-column="40" />
+        <state relative-caret-position="102">
+          <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
           <folding>
             <element signature="e#15#88#0" expanded="true" />
           </folding>

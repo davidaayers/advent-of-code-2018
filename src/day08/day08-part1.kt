@@ -14,7 +14,7 @@ fun parsePuzzleInput(fileName: String) {
         .toMutableList()
 
     val nameGenerator = AtomicInteger('A'.toInt())
-    val rootNode = parseNode(licenseParts,nameGenerator)
+    val rootNode = parseNode(licenseParts, nameGenerator)
 
     println("rootNode = $rootNode")
 
@@ -25,7 +25,9 @@ fun parsePuzzleInput(fileName: String) {
 
     val answer = allNodes.flatMap { it.metadata.toList() }.sum()
 
-    println("answer = $answer")
+    println("Part 1 answer = $answer")
+
+    println("Part 2 answer = ${rootNode.value()}")
 
 }
 
@@ -35,7 +37,7 @@ fun parseNode(licenseParts: MutableList<Int>, nameGenerator: AtomicInteger): Nod
     val node = Node(nameGenerator.nextName())
 
     for (n in 0 until childrenCnt) {
-        val child = parseNode(licenseParts,nameGenerator)
+        val child = parseNode(licenseParts, nameGenerator)
         node.children.add(child)
     }
 
@@ -55,6 +57,20 @@ data class Node(val name: String) {
 
     val allChildren: List<Node>
         get() = children + children.flatMap { it.allChildren }
+
+    fun value(): Int {
+        return when {
+            children.size == 0 -> metadata.sum()
+            else -> {
+                return metadata.map {
+                    when {
+                        it == 0 || it > children.size -> 0
+                        else -> children[it-1].value()
+                    }
+                }.sum()
+            }
+        }
+    }
 
     override fun toString(): String {
         return "$name (Metadata: $metadata, children: $children"
