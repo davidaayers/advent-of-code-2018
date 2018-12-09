@@ -2,52 +2,50 @@ package day09
 
 fun main(args: Array<String>) {
     part1()
-//    part2()
+    println("-------------------------------------------")
+    part2()
 }
 
 fun part1() {
-    val numMarbles = 72164
-    val marbles = (1..numMarbles).toMutableList()
-
-    playGame(marbles, 419)
+    playGame(419, 72164)
 }
 
 fun part2() {
-    val numMarbles = 7216400
-    val marbles = (1..numMarbles).toMutableList()
-
-    playGame(marbles, 419)
+    playGame(419, 7216400)
 }
 
-private fun playGame(marbles: MutableList<Int>, numPlayers: Int) {
+private fun playGame(
+    numPlayers: Int,
+    numMarbles: Int
+) {
     val scores = LongArray(numPlayers)
     var currentMarble = Node(0)
     val circle = Circle(currentMarble)
 
-    while (marbles.isNotEmpty()) {
-        for (player in 0 until scores.size) {
-            if (marbles.isNotEmpty()) {
-                val marble = marbles.removeAt(0)
-                if (marble % 23 == 0) {
-                    // time to score
-                    scores[player] += marble.toLong()
+    var player = 0
+    for (m in 1..numMarbles) {
+        if (m % 23 == 0) {
+            // time to score
+            scores[player] += m.toLong()
 
-                    // also remove the marble 7 counter-clockwise and
-                    // add to score
-                    val otherMarble = circle.navigateClockwise(currentMarble, 7)
-                    currentMarble = circle.remove(otherMarble).next!!
+            // also remove the marble 7 counter-clockwise and
+            // add to score
+            val otherMarble = circle.navigateClockwise(currentMarble, 7)
+            currentMarble = circle.remove(otherMarble).next!!
 
-                    scores[player] += otherMarble.score.toLong()
+            scores[player] += otherMarble.score.toLong()
 
-                    println(
-                        "player: $player scores [marble = $marble, " +
-                                "otherMarble = ${otherMarble.score}]: ${scores[player]}"
-                    )
-                } else {
-                    currentMarble = circle.insert(currentMarble.next!!, Node(marble))
-                    //println("player: $player places $currentMarble circle = $circle")
-                }
-            }
+//            println(
+//                "player: $player scores [marble = $m, " +
+//                        "otherMarble = ${otherMarble.score}]: ${scores[player]}"
+//            )
+        } else {
+            currentMarble = circle.insert(currentMarble.next!!, Node(m))
+            //println("player: $player places $currentMarble circle = $circle")
+        }
+        player++
+        if (player == numPlayers) {
+            player = 0
         }
     }
 
