@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0d7852c2-32b8-46db-994f-09fe92f5ace4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/day09/day09-part1.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/day09/day09-part1.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/day09/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/day09/readme.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,8 +18,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/day09/day09-part1.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="39" column="6" selection-start-line="39" selection-start-column="6" selection-end-line="39" selection-end-column="6" />
+            <state relative-caret-position="499">
+              <caret line="48" selection-start-line="48" selection-end-line="48" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/day09/readme.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="918">
+                <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -26,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/src/day09/input.txt">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="3" selection-end-column="3" />
+              <caret column="39" selection-start-column="34" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -70,8 +84,8 @@
         <option value="$PROJECT_DIR$/src/day08/input.txt" />
         <option value="$PROJECT_DIR$/src/day08/day08-part1.kt" />
         <option value="$PROJECT_DIR$/src/day08/readme.md" />
-        <option value="$PROJECT_DIR$/src/day09/readme.md" />
         <option value="$PROJECT_DIR$/src/day09/input.txt" />
+        <option value="$PROJECT_DIR$/src/day09/readme.md" />
         <option value="$PROJECT_DIR$/src/day09/day09-part1.kt" />
       </list>
     </option>
@@ -243,12 +257,12 @@
       <workItem from="1543688072615" duration="17612000" />
       <workItem from="1544282607526" duration="277000" />
       <workItem from="1544282983763" duration="223000" />
-      <workItem from="1544283219920" duration="11321000" />
+      <workItem from="1544283219920" duration="12628000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="38414000" />
+    <option name="totallyTimeSpent" value="39721000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
@@ -532,8 +546,8 @@
     <entry file="file://$PROJECT_DIR$/src/day09/readme.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="901">
-            <caret line="53" column="32" lean-forward="true" selection-start-line="53" selection-start-column="32" selection-end-line="53" selection-end-column="32" />
+          <first_editor relative-caret-position="918">
+            <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
           </first_editor>
           <second_editor />
         </state>
@@ -542,14 +556,14 @@
     <entry file="file://$PROJECT_DIR$/src/day09/input.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state>
-          <caret column="3" selection-end-column="3" />
+          <caret column="39" selection-start-column="34" selection-end-column="39" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/day09/day09-part1.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="39" column="6" selection-start-line="39" selection-start-column="6" selection-end-line="39" selection-end-column="6" />
+        <state relative-caret-position="499">
+          <caret line="48" selection-start-line="48" selection-end-line="48" />
         </state>
       </provider>
     </entry>

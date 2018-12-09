@@ -1,11 +1,26 @@
 package day09
 
 fun main(args: Array<String>) {
-    val numMarbles = 72164
-    val scores = Array(419) { 0 }
+    part1()
+//    part2()
+}
 
+fun part1() {
+    val numMarbles = 72164
     val marbles = (1..numMarbles).toMutableList()
 
+    playGame(marbles, 419)
+}
+
+fun part2() {
+    val numMarbles = 7216400
+    val marbles = (1..numMarbles).toMutableList()
+
+    playGame(marbles, 419)
+}
+
+private fun playGame(marbles: MutableList<Int>, numPlayers: Int) {
+    val scores = Array(numPlayers) { 0 }
     var currentMarble = Node(0)
     val circle = Circle(currentMarble)
 
@@ -28,16 +43,14 @@ fun main(args: Array<String>) {
                         "player: $player scores [marble = $marble, " +
                                 "otherMarble = ${otherMarble.score}]: ${scores[player]}"
                     )
-                    //println("circle = $circle")
                 } else {
                     currentMarble = circle.insert(currentMarble.next!!, Node(marble))
-                    //println("player: $player places $currentMarble circle = $circle")
+                    println("player: $player places $currentMarble circle = $circle")
                 }
             }
         }
     }
 
-    //println("scores = ${scores.joinToString()}")
     val winningScore = scores.max()
     println("winningScore = $winningScore")
 }
@@ -71,7 +84,7 @@ class Circle(private val head: Node) {
 
     fun navigateClockwise(fromNode: Node, times: Int): Node {
         var result = fromNode
-        for (it in 0 until times) {
+        repeat(times) {
             result = result.prev!!
         }
         return result
