@@ -20,7 +20,7 @@ fun part2() {
 }
 
 private fun playGame(marbles: MutableList<Int>, numPlayers: Int) {
-    val scores = Array(numPlayers) { 0 }
+    val scores = LongArray(numPlayers)
     var currentMarble = Node(0)
     val circle = Circle(currentMarble)
 
@@ -30,14 +30,14 @@ private fun playGame(marbles: MutableList<Int>, numPlayers: Int) {
                 val marble = marbles.removeAt(0)
                 if (marble % 23 == 0) {
                     // time to score
-                    scores[player] += marble
+                    scores[player] += marble.toLong()
 
                     // also remove the marble 7 counter-clockwise and
                     // add to score
                     val otherMarble = circle.navigateClockwise(currentMarble, 7)
                     currentMarble = circle.remove(otherMarble).next!!
 
-                    scores[player] += otherMarble.score
+                    scores[player] += otherMarble.score.toLong()
 
                     println(
                         "player: $player scores [marble = $marble, " +
@@ -45,7 +45,7 @@ private fun playGame(marbles: MutableList<Int>, numPlayers: Int) {
                     )
                 } else {
                     currentMarble = circle.insert(currentMarble.next!!, Node(marble))
-                    println("player: $player places $currentMarble circle = $circle")
+                    //println("player: $player places $currentMarble circle = $circle")
                 }
             }
         }
