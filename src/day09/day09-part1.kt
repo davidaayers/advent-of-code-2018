@@ -34,14 +34,8 @@ private fun playGame(
             currentMarble = circle.remove(otherMarble).next!!
 
             scores[player] += otherMarble.score.toLong()
-
-//            println(
-//                "player: $player scores [marble = $m, " +
-//                        "otherMarble = ${otherMarble.score}]: ${scores[player]}"
-//            )
         } else {
             currentMarble = circle.insert(currentMarble.next!!, Node(m))
-            //println("player: $player places $currentMarble circle = $circle")
         }
         player++
         if (player == numPlayers) {
