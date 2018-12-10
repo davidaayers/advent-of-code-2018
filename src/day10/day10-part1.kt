@@ -7,6 +7,7 @@ fun main(args: Array<String>) {
 
     var smallestMapWidth = Integer.MAX_VALUE
 
+    var seconds = 0
     while (true) {
         val sizes = renderStarMap(coords)
         if (sizes.first < smallestMapWidth) {
@@ -17,10 +18,12 @@ fun main(args: Array<String>) {
             coords.forEach { it.untick() }
             renderStarMap(coords, true)
             println("--------------------------")
+            println("Took ${seconds - 1} seconds to appear")
             break
         }
 
         coords.forEach { it.tick() }
+        seconds ++
     }
 }
 
