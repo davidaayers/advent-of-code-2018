@@ -7,46 +7,51 @@ fun main(args: Array<String>) {
 
     var smallestMapWidth = Integer.MAX_VALUE
 
-    while(true) {
-        val starMap = buildStarMap(coords)
-        if(starMap.size < smallestMapWidth){
-            smallestMapWidth = starMap.size
+    while (true) {
+        val sizes = renderStarMap(coords)
+        if (sizes.first < smallestMapWidth) {
+            smallestMapWidth = sizes.first
         } else {
-            println("Found likely word")
+            println("Found likely word:")
+            println("--------------------------")
+            coords.forEach { it.untick() }
+            renderStarMap(coords, true)
+            println("--------------------------")
             break
         }
-        renderStarMap(starMap)
-        println("--------------------------")
+
         coords.forEach { it.tick() }
     }
 }
 
-fun buildStarMap(coords: List<Coord>): Array<Array<String>> {
+fun renderStarMap(coords: List<Coord>, printIt: Boolean = false): Pair<Int, Int> {
     val maxX = coords.map { it.x }.max()!! + 1
     val maxY = coords.map { it.y }.max()!! + 1
     val minX = coords.map { it.x }.min()!!
     val minY = coords.map { it.y }.min()!!
 
-    val starMap = Array(maxY - minY) {
-        Array(maxX - minX) { "." }
-    }
+    val ySize = maxY - minY
+    val xSize = maxX - minX
 
-    for (it in coords) {
-        val adjY = it.y - minY
-        val adjX = it.x - minX
-        starMap[adjY][adjX] = "#"
-    }
-
-    return starMap
-}
-
-private fun renderStarMap(starMap: Array<Array<String>>) {
-    for (y in 0 until starMap.size) {
-        for (x in 0 until starMap[y].size) {
-            print(starMap[y][x])
+    if (printIt) {
+        for (y in 0 until ySize) {
+            for (x in 0 until xSize) {
+                val matching = coords.find {
+                    val adjY = it.y - minY
+                    val adjX = it.x - minX
+                    adjX == x && adjY == y
+                }
+                if (matching != null) {
+                    print("#")
+                } else {
+                    print(".")
+                }
+            }
+            println("")
         }
-        println("")
     }
+
+    return Pair(xSize, ySize)
 }
 
 data class Coord(var x: Int, var y: Int, var xv: Int, var yv: Int) {
@@ -62,6 +67,11 @@ data class Coord(var x: Int, var y: Int, var xv: Int, var yv: Int) {
     fun tick() {
         x += xv
         y += yv
+    }
+
+    fun untick() {
+        x -= xv
+        y -= yv
     }
 }
 
