@@ -2,7 +2,10 @@ package day11
 
 fun main(args: Array<String>) {
     examples()
+    part1()
+}
 
+private fun part1() {
     val serialNumber = 9005
     var winningX = 0
     var winningY = 0
@@ -23,10 +26,10 @@ fun main(args: Array<String>) {
 }
 
 data class Grid(val serialNumber: Int, val startX: Int, val startY: Int) {
-    fun value(): Int {
+    fun value(size:Int = 3): Int {
         var value = 0
-        for (y in startY until startY + 3) {
-            for (x in startX until startX + 3) {
+        for (y in startY until startY + size) {
+            for (x in startX until startX + size) {
                 value += cellValue(x, y)
             }
         }
