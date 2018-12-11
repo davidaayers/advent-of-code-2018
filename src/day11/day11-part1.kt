@@ -4,15 +4,22 @@ fun main(args: Array<String>) {
     examples()
 
     val serialNumber = 9005
-    val allPossibleGrids = mutableListOf<Grid>()
+    var winningX = 0
+    var winningY = 0
+    var winningValue = 0
     for (y in 1..198) {
         for (x in 1..298) {
-            allPossibleGrids.add(Grid(serialNumber, x, y))
+            val grid = Grid(serialNumber, x, y)
+            val value = grid.value()
+            if (value > winningValue) {
+                winningValue = value
+                winningX = x
+                winningY = y
+            }
         }
     }
 
-    val highestGrid = allPossibleGrids.maxBy { it.value() }!!
-    println("highestGrid = $highestGrid, power = ${highestGrid.value()}")
+    println("winning grid is $winningX,$winningY with power of $winningValue")
 }
 
 data class Grid(val serialNumber: Int, val startX: Int, val startY: Int) {
