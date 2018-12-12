@@ -11,35 +11,29 @@ fun main(args: Array<String>) {
         pots.add(0, ".")
         pots.add(".")
     }
-    //println("pots = $pots")
 
     val zeroIndex = pots.indexOfFirst { it == "#" }
-    val gens = 50000000000
+    val gens = 20
 
     var lastDiffs = mutableListOf<Int>()
 
     println("0:\t${pots.joinToString(separator = "")}")
     var prevGenSum = sum(pots, zeroIndex)
     for (gen in 1..gens) {
-        val nextGen = mutableListOf<String>()
-        nextGen.addAll(pots)
-        for (pot in 2 until pots.size - 2) {
-            val checkPot = (pot - 2..pot + 2).joinToString(separator = "") { pots[it] }
-            nextGen[pot] = rules.getOrDefault(checkPot, ".")
-        }
+        pots = pots.mapIndexed { idx, _ ->
+            rules.getOrDefault(pots.surroundingPots(idx), ".")
+        }.toMutableList()
 
         // add some pots to the end?
-        if (nextGen.lastIndexOf("#") + 4 > nextGen.size) {
-            repeat(3) { nextGen.add(".") }
+        if (pots.lastIndexOf("#") + 4 > pots.size) {
+            repeat(3) { pots.add(".") }
         }
 
-        pots = nextGen
         //println("$gen:\t${pots.joinToString(separator = "")}")
 
         val sum = sum(pots, zeroIndex)
         val diff = sum - prevGenSum
         prevGenSum = sum
-        println("sum for gen $gen = $sum, diff = $diff")
 
         if (gen % 20.toLong() == 0.toLong()) {
             println("Answer to part1 = $sum")
@@ -58,6 +52,12 @@ fun main(args: Array<String>) {
 
     }
 
+}
+
+private fun List<String>.surroundingPots(idx: Int): String {
+    val start = if (idx - 2 < 0) 0 else idx - 2
+    val end = if (idx + 2 > this.size - 1) this.size - 1 else idx + 2
+    return (start..end).joinToString(separator = "") { this[it] }
 }
 
 private fun sum(pots: MutableList<String>, zeroIndex: Int) =
