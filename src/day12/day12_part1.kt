@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
         //println("$gen:\t${pots.joinToString(separator = "")}")
 
         val sum = sum(pots, zeroIndex)
-        var diff = sum - prevGenSum
+        val diff = sum - prevGenSum
         prevGenSum = sum
         println("sum for gen $gen = $sum, diff = $diff")
 
@@ -50,7 +50,7 @@ fun main(args: Array<String>) {
             lastDiffs = lastDiffs.subList(0, 10)
 
             if (lastDiffs.distinct().toList().size == 1) {
-                var finalAnswer = sum + ((gens - gen) * diff)
+                val finalAnswer = sum + ((gens - gen) * diff)
                 println("list hasn't changed in 10 iterations, achieved stability...answer to part 2= $finalAnswer")
                 break
             }
