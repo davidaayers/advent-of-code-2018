@@ -3,15 +3,15 @@ package day12
 import readFileIntoLines
 
 fun main(args: Array<String>) {
-    val (initial, rules) = parseInput("/day12/input.txt")
+    val (initial, rules) = parseInput("/day12/input-small.txt")
 
     var pots = initial.toCharArray().map { it.toString() }.toMutableList()
     // add a few empty pots to the left & right
-    repeat(5) {
+    repeat(4) {
         pots.add(0, ".")
         pots.add(".")
     }
-    println("pots = $pots")
+    //println("pots = $pots")
 
     val zeroIndex = pots.indexOfFirst { it == "#" }
     val gens = 20
@@ -24,18 +24,18 @@ fun main(args: Array<String>) {
             val checkPot = (pot - 2..pot + 2).joinToString(separator = "") { pots[it] }
             nextGen[pot] = rules.getOrDefault(checkPot, ".")
         }
-        // do we need to add some pots to the beginning or end?
-        repeat(3) {
-            nextGen.add(".")
+
+        // add some pots to the end?
+        if (nextGen.lastIndexOf("#") + 4 > nextGen.size) {
+            repeat(3) { nextGen.add(".") }
         }
-        //zeroIndex += 3
+
         pots = nextGen
         println("$gen:\t${pots.joinToString(separator = "")}")
-    }
 
-    // get the total of our pots
-    val sum = pots.mapIndexed { idx, it -> if (it == ".") 0 else idx - zeroIndex }.sum()
-    println("sum = $sum")
+        val sum = pots.mapIndexed { idx, it -> if (it == ".") 0 else idx - zeroIndex }.sum()
+        println("sum for gen $gen = $sum")
+    }
 
 }
 
