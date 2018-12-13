@@ -119,12 +119,6 @@ data class Cart(val cartId: Int, var x: Int, var y: Int, var dir: Direction, var
         x += dir.dx
 
         // see what the next char in dir is
-        if (x < 0 || y < 0) {
-            println("this = ${this}")
-        }
-        if (y > map.size - 1 || x > map[y].size - 1) {
-            println("this = ${this}")
-        }
         val newChar = map[y][x]
         if (newChar == '+') {
             // make a decision
