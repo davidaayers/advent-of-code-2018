@@ -3,7 +3,10 @@ fun String.asResource(work: (String) -> Unit) {
 }
 
 fun readEntireFile(fileName: String) =
-    fileName.javaClass::class.java.getResource(fileName).readText().trim()
+    readEntireFileNoTrim(fileName).trim()
+
+fun readEntireFileNoTrim(fileName: String) =
+    fileName.javaClass::class.java.getResource(fileName).readText()
 
 fun readFileIntoLines(fileName: String): List<String> =
     readEntireFile(fileName).split("\n")
