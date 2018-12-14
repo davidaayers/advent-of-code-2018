@@ -17,3 +17,7 @@ fun String.parseInt() = if(this.startsWith("+")) {
     this.toInt()
 }
 
+fun String.chunked(size: Int): List<String> {
+    val nChunks = length / size
+    return (0 until nChunks).map { substring(it * size, (it + 1) * size) }
+}
