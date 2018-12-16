@@ -4,10 +4,10 @@ import readFileIntoLines
 import java.util.*
 
 val dirs = mapOf(
-    "Left" to Direction(1, 0),
-    "Right" to Direction(-1, 0),
-    "Down" to Direction(0, 1),
-    "Up" to Direction(0, -1)
+    "Up" to Direction(0, -1),
+    "Left" to Direction(-1, 0),
+    "Right" to Direction(1, 0),
+    "Down" to Direction(0, 1)
 )
 
 fun main(args: Array<String>) {
@@ -15,12 +15,19 @@ fun main(args: Array<String>) {
     println("Starting map:")
     println("$map")
     println("------------------------------")
-    val units = map.unitsInReadingOrder()
 
-    units.forEach {
-        it.takeTurn(map)
-        println("$map")
-        println("------------------------------")
+    var turn = 1
+
+    while ( turn <= 10 ){
+        println("TURN $turn START")
+        val units = map.unitsInReadingOrder()
+        units.forEach {
+            println("BeforeTurn ->\n$map")
+            it.takeTurn(map)
+            println("AfterTurn ->\n$map")
+        }
+        println("TURN $turn OVER")
+        turn++
     }
 }
 
@@ -28,6 +35,7 @@ fun parseMap(fileName: String): Map {
     val lines = readFileIntoLines(fileName).map { it.trim() }
     val map = Map(lines[0].length, lines.size)
 
+    var fighterId = 1
     lines.forEachIndexed { y, line ->
         line.forEachIndexed { x, c ->
             when (c) {
@@ -35,7 +43,7 @@ fun parseMap(fileName: String): Map {
                 'E', 'G' -> {
                     val enemy = if (c == 'E') 'G' else 'E'
                     map.addFeature(x, y, '.')
-                    map.units.add(Fighter(c, enemy, x, y))
+                    map.units.add(Fighter(fighterId++, c, enemy, x, y))
                 }
             }
         }
@@ -72,7 +80,7 @@ class Map(width: Int, height: Int) {
             units.firstOrNull { u ->
                 u.x == fighter.x + it.dx &&
                         u.y == fighter.y + it.dy &&
-                        fighter.type == enemy
+                        u.type == enemy
             }
         }
     }
@@ -132,6 +140,7 @@ class Map(width: Int, height: Int) {
 }
 
 data class Fighter(
+    val id: Int,
     val type: Char,
     val enemy: Char,
     var x: Int,
@@ -140,6 +149,8 @@ data class Fighter(
     var hitPoints: Int = 200
 ) {
     fun takeTurn(map: Map) {
+        println("Fighter: $this taking turn -->")
+
         // if we're dead, don't do anything
         if (isDead()) return
 
@@ -184,8 +195,6 @@ data class Fighter(
                 enemyPaths[enemy] = shortestPathsByReadingOrder[0]
             }
         }
-
-        println("enemyPaths = ${enemyPaths}")
 
         val sortedByReadingOrder = enemyPaths
             .map { it.key to it.value }
