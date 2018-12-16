@@ -22,17 +22,20 @@ fun main(args: Array<String>) {
                 break@loop
             }
 
-            println("BeforeTurn ($it) ->\n$map")
+            //println("BeforeTurn ($it) ->\n$map")
             it.takeTurn(map)
-            println("AfterTurn ->\n$map")
+            //println("AfterTurn ->\n$map")
         }
 
         // remove any dead enemies
         map.removeDeadEnemies()
 
-        println("TURN $turn OVER")
+        println("TURN $turn OVER:\n$map")
         turn++
     }
+
+    // don't count the last turn
+    turn--
 
     println("Combat ended after $turn turns, final map\n$map")
     val remainingHp = map.units.sumBy { it.hitPoints }
@@ -82,7 +85,7 @@ class Map(width: Int, height: Int) {
             sb.append("   ")
 
             // add all units for this line
-            units.filter { it.y == y }.forEach {
+            units.filter { it.y == y }.sortedBy { it.x }.forEach {
                 sb.append("(${it.type}[${it.id}]:${it.hitPoints}) ")
             }
 
@@ -129,10 +132,6 @@ class Map(width: Int, height: Int) {
                         val checkX = exploring.x + it.dx
                         val checkY = exploring.y + it.dy
                         val node = Node(exploring, checkX, checkY)
-                        // if node if the destination, add it anyway
-//                        if (checkX == to.first && checkY == to.second) {
-//                            node
-//                        } else
                         if (canMove(checkX, checkY) && !visited.hasOneLike(node)) {
                             node
                         } else {
@@ -180,26 +179,29 @@ data class Fighter(
         if (isDead()) return
 
         // see if we're adjacent to any enemies
-        val adjacentEnemies = map.adjacentUnitsOfType(this, enemy)
+        var adjacentEnemies = map.adjacentUnitsOfType(this, enemy)
 
+        if(adjacentEnemies.isEmpty()){
+            maybeMove(map)
+        }
+
+        adjacentEnemies = map.adjacentUnitsOfType(this, enemy)
         if (adjacentEnemies.isNotEmpty()) {
             attack(adjacentEnemies)
-        } else {
-            move(map)
         }
     }
 
     private fun attack(enemies: List<Fighter>) {
         // sort the list of enemies by hp, then reading order
-        val enemyToAttack = enemies
-            .sortedByDescending { it.hitPoints }
-            .sortedWith(compareBy({ it.y }, { it.x }))
+        val sortedEnemies = enemies
+            .sortedWith(compareBy({ it.hitPoints }, { it.y }, { it.x }))
+        val enemyToAttack = sortedEnemies
             .first()
 
         enemyToAttack.hitPoints -= attackPower
     }
 
-    private fun move(map: Map) {
+    private fun maybeMove(map: Map) {
         // path to all enemies
         val enemies = map.units.filter { it.type == enemy }
 
@@ -220,10 +222,6 @@ data class Fighter(
                 )
             }
 
-//            val allPaths = endPoints.map { point ->
-//                map.path(Pair(x, y), point)
-//            }
-
             // find the shortest, and then sort by readingOrder of the first step
             val smallestNonZero = allPaths
                 .filter { it.isNotEmpty() }
@@ -239,12 +237,9 @@ data class Fighter(
             }
         }
 
-        val sortedByReadingOrder = enemyPaths
+        val movePath = enemyPaths
             .map { it.key to it.value }
             .sortedWith(compareBy({ it.second.size }, { it.first.y }, { it.first.x }))
-
-
-        val movePath = sortedByReadingOrder
             .map { it.second }
             .firstOrNull()
 
