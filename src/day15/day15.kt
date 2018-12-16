@@ -11,7 +11,7 @@ val dirs = mapOf(
 )
 
 fun main(args: Array<String>) {
-    val map = parseMap("/day15/input-small.txt")
+    val map = parseMap("/day15/input.txt")
     var turn = 1
     loop@ while (true) {
         println("TURN $turn START")
