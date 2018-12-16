@@ -29,7 +29,7 @@ How many units remain after fully reacting the polymer you scanned? (Note: in th
 
 Time to improve the polymer.
 
-One of the unit types is causing problems; it's preventing the polymer from collapsing as much as it should. Your goal is to figure out which unit type is causing the most problems, remove all instances of it (regardless of polarity), fully react the remaining polymer, and measure its length.
+One of the fighter types is causing problems; it's preventing the polymer from collapsing as much as it should. Your goal is to figure out which fighter type is causing the most problems, remove all instances of it (regardless of polarity), fully react the remaining polymer, and measure its length.
 
 For example, again using the polymer dabAcCaCBAcCcaDA from above:
 
