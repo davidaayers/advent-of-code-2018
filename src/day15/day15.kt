@@ -116,9 +116,10 @@ class Map(width: Int, height: Int) {
         frontier.add(Node(null, from.first, from.second))
 
         while (frontier.isNotEmpty()) {
+            //println("frontier.size = ${frontier.size}")
             val exploring = frontier.poll()
 
-            //if (visited.hasOneLike(exploring)) continue
+            if (visited.hasOneLike(exploring)) continue
             visited.add(exploring)
 
             if (exploring.x == to.first && exploring.y == to.second) {
