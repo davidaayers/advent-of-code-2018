@@ -11,30 +11,62 @@ val dirs = mapOf(
 )
 
 fun main(args: Array<String>) {
-    val map = parseMap("/day15/input.txt")
+    var atkPower = 0
+    var powerIncrement = 5
+    var elvesWon = false
+
+    var highestLoss = -1
+    var lowestWin = Integer.MAX_VALUE
+
+    while (true) {
+        atkPower += powerIncrement
+        print("Attack Power $atkPower...")
+        elvesWon = simulateBattle("/day15/input.txt", atkPower, false)
+        println("elves won: $elvesWon")
+
+        if (elvesWon) {
+            lowestWin = atkPower
+
+            if (lowestWin == highestLoss + 1) {
+                break
+            }
+            powerIncrement = -1
+        } else {
+            if(powerIncrement == -1) {
+                atkPower++
+                break
+            }
+            highestLoss = atkPower
+        }
+
+    }
+
+    println("Winning Attack Power Was = $atkPower")
+}
+
+private fun simulateBattle(fileName: String, elfAttackPower: Int, allowElfDeaths: Boolean = true): Boolean {
+    val map = parseMap(fileName, elfAttackPower)
+    val numStartingElves = map.units.count { it.type == 'E' }
     var turn = 1
     loop@ while (true) {
-        println("TURN $turn START")
+        //println("TURN $turn START")
         val units = map.unitsInReadingOrder()
         for (it in units) {
-            println("BeforeTurn ($it) ->\n$map")
+            //println("BeforeTurn ($it) ->\n$map")
             it.takeTurn(map)
             map.removeDeadUnits()
-            println("AfterTurn ->\n$map")
+            //println("AfterTurn ->\n$map")
 
             val nonDeadEnemies = map.nonDeadUnitsOfType(it.enemy)
 
-            println("nonDeadEnemies = ${nonDeadEnemies}")
+            //println("nonDeadEnemies = ${nonDeadEnemies}")
             if (nonDeadEnemies == 0) {
                 break@loop
             }
         }
-        println("TURN $turn OVER:\n$map")
+        //println("TURN $turn OVER:\n$map")
         turn++
     }
-
-    // before summing up score, remove dead enemies one last time
-    map.removeDeadUnits()
 
     // don't count the last turn
     turn--
@@ -42,9 +74,22 @@ fun main(args: Array<String>) {
     println("Combat ended after $turn turns, final map\n$map")
     val remainingHp = map.units.sumBy { it.hitPoints }
     println("Answer to puzzle is $remainingHp * $turn = ${remainingHp * turn}")
+
+    val numSurvivingElves = map.units.count { it.type == 'E' }
+    println("numStartingElves = $numStartingElves numSurvivingElves = $numSurvivingElves")
+
+    if (numSurvivingElves == 0) {
+        return false
+    }
+
+    if (!allowElfDeaths) {
+        return numStartingElves == numSurvivingElves
+    }
+
+    return true
 }
 
-fun parseMap(fileName: String): Map {
+fun parseMap(fileName: String, elftAttackPower: Int): Map {
     val lines = readFileIntoLines(fileName).map { it.trim() }
     val map = Map(lines[0].length, lines.size)
 
@@ -55,8 +100,9 @@ fun parseMap(fileName: String): Map {
                 '#', '.' -> map.addFeature(x, y, c)
                 'E', 'G' -> {
                     val enemy = if (c == 'E') 'G' else 'E'
+                    val atk = if (c == 'E') elftAttackPower else 3
                     map.addFeature(x, y, '.')
-                    map.units.add(Fighter(fighterId++, c, enemy, x, y))
+                    map.units.add(Fighter(fighterId++, c, enemy, x, y, atk))
                 }
             }
         }
