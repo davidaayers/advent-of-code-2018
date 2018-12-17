@@ -22,20 +22,54 @@ val opcodes = listOf(
 )
 
 fun main(args: Array<String>) {
-    val allTestData = parseInput("/day16/input.txt")
-    val counts = allTestData.map { testData ->
-        val matchingOpcodes = opcodes.filter { testData.matches(it) }
+    val mappedOpcodes = part1()
+    val instructions = parsePart2Input("/day16/input-part2.txt")
 
-        println("TestData: $testData")
-        println("Matching Opcodes: $matchingOpcodes")
-        matchingOpcodes.size
-    }.filter { it >= 3 }
+    val registers = intArrayOf(0, 0, 0, 0)
+    instructions.forEach { instruction ->
+        mappedOpcodes[instruction[0]]!!.operate(registers, instruction)
+    }
 
-    println("\nCounts = $counts")
-    println("Part 1 answer is ${counts.size}")
+    println("registers = ${registers.toList()}")
 }
 
-fun parseInput(fileName: String): List<TestData> {
+private fun part1(): Map<Int, OpCode> {
+    val allTestData = parsePart1Input("/day16/input.txt")
+
+    val mappedOpcodes = mutableMapOf<Int, MutableSet<OpCode>>()
+    val counts = mutableListOf<Int>()
+    for (testDatum in allTestData) {
+        val opcodeId = testDatum.operations[0]
+        val matches = opcodes.filter { testDatum.matches(it) }.toMutableSet()
+        counts.add(matches.size)
+        if (mappedOpcodes.containsKey(opcodeId)) {
+            mappedOpcodes[opcodeId]!!.addAll(matches)
+        } else {
+            mappedOpcodes[opcodeId] = matches
+        }
+    }
+
+    val part1Answer = counts.filter { it >= 3 }.size
+    println("part1Answer = $part1Answer")
+
+    val foundCodes = mutableMapOf<Int, OpCode>()
+
+    while (mappedOpcodes.isNotEmpty()) {
+        // find any with online 1 code in them
+        mappedOpcodes.filter { it.value.size == 1 }.forEach { opcodeId, potentialOpcodes ->
+            val opcode = potentialOpcodes.first()
+            foundCodes[opcodeId] = opcode
+            mappedOpcodes.remove(opcodeId)
+            mappedOpcodes.forEach { k, v ->
+                v.remove(opcode)
+            }
+        }
+    }
+
+    return foundCodes
+}
+
+fun parsePart1Input(fileName: String): List<TestData> {
     val lines = readFileIntoLines(fileName).toMutableList()
     val regex = """\w+:\s+\[(\d+), (\d+), (\d+), (\d+)\].*""".toRegex()
     val allTestData = mutableListOf<TestData>()
@@ -57,6 +91,14 @@ fun parseInput(fileName: String): List<TestData> {
     return allTestData
 }
 
+fun parsePart2Input(fileName: String): List<IntArray> {
+    val lines = readFileIntoLines(fileName)
+    val regex = """(\d+) (\d+) (\d+) (\d+)""".toRegex()
+    return lines.map { line ->
+        regex.find(line)!!.destructured.toList().map { it.toInt() }.toIntArray()
+    }.toList()
+}
+
 data class TestData(val before: IntArray, val operations: IntArray, val after: IntArray) {
     fun matches(opcode: OpCode): Boolean {
         val registers = before.copyOf()
@@ -76,6 +118,22 @@ sealed class OpCode(var name: String) {
     override fun toString(): String {
         return name
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OpCode
+
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
 
     /*
     addr (add register) stores into register C the result of adding register A and register B.
