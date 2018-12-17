@@ -17,22 +17,24 @@ fun main(args: Array<String>) {
         println("TURN $turn START")
         val units = map.unitsInReadingOrder()
         for (it in units) {
-            // see if there are *any* enemies left
-            if (map.units.none { unit -> unit.type == it.enemy }) {
+            println("BeforeTurn ($it) ->\n$map")
+            it.takeTurn(map)
+            map.removeDeadUnits()
+            println("AfterTurn ->\n$map")
+
+            val nonDeadEnemies = map.nonDeadUnitsOfType(it.enemy)
+
+            println("nonDeadEnemies = ${nonDeadEnemies}")
+            if (nonDeadEnemies == 0) {
                 break@loop
             }
-
-            //println("BeforeTurn ($it) ->\n$map")
-            it.takeTurn(map)
-            //println("AfterTurn ->\n$map")
         }
-
-        // remove any dead enemies
-        map.removeDeadEnemies()
-
         println("TURN $turn OVER:\n$map")
         turn++
     }
+
+    // before summing up score, remove dead enemies one last time
+    map.removeDeadUnits()
 
     // don't count the last turn
     turn--
@@ -66,6 +68,10 @@ fun parseMap(fileName: String): Map {
 class Map(width: Int, height: Int) {
     val map = Array(height) { CharArray(width) { '#' } }
     val units = mutableListOf<Fighter>()
+
+    fun nonDeadUnitsOfType(type: Char): Int {
+        return units.count { it.type == type && !it.isDead() }
+    }
 
     fun addFeature(x: Int, y: Int, feature: Char) {
         map[y][x] = feature
@@ -156,7 +162,7 @@ class Map(width: Int, height: Int) {
         return units.none { it.x == x && it.y == y }
     }
 
-    fun removeDeadEnemies() {
+    fun removeDeadUnits() {
         units.removeAll { it.isDead() }
     }
 }
@@ -181,7 +187,7 @@ data class Fighter(
         // see if we're adjacent to any enemies
         var adjacentEnemies = map.adjacentUnitsOfType(this, enemy)
 
-        if(adjacentEnemies.isEmpty()){
+        if (adjacentEnemies.isEmpty()) {
             maybeMove(map)
         }
 
@@ -222,18 +228,21 @@ data class Fighter(
                 )
             }
 
-            // find the shortest, and then sort by readingOrder of the first step
-            val smallestNonZero = allPaths
-                .filter { it.isNotEmpty() }
-                .groupingBy { it.size }
-                .eachCount()
-                .minBy { it.key }?.key ?: 0
+            if (allPaths.isNotEmpty()) {
+                val correctPath = allPaths
+                    .filter { it.isNotEmpty() }
+                    .sortedWith(
+                        compareBy(
+                            { it.size },
+                            { it.last().second },
+                            { it.last().first },
+                            { it.first().second },
+                            { it.first().first })
+                    ).firstOrNull()
 
-            if (smallestNonZero > 0) {
-                val shortestPathsByReadingOrder = allPaths
-                    .filter { it.size == smallestNonZero }
-                    .sortedWith(compareBy({ it[0].second }, { it[0].first }))
-                enemyPaths[enemy] = shortestPathsByReadingOrder[0]
+                if (correctPath != null) {
+                    enemyPaths[enemy] = correctPath
+                }
             }
         }
 
