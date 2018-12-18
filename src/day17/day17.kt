@@ -31,11 +31,13 @@ var iters = 0
 fun flow(from: Point, map: Map) {
     iters++
 
-    if (iters % 400 == 0) {
-        println("----- $iters -----")
-        println(map)
-        println("-------------------")
-    }
+//    if (iters % 400 == 0) {
+//        println("----- $iters -----")
+//        println(map)
+//        println("-------------------")
+//    }
+
+    Thread.sleep(1)
 
     // if we hit the bottom, bail out
     val down = from + d_down
