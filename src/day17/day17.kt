@@ -14,13 +14,15 @@ fun main(args: Array<String>) {
     println(map)
 
     var count = 0
+    var countStanding = 0
     for (y in map.minY until map.maxY) {
         for (x in map.minX until map.maxX) {
             if (map.map[y][x] in "|~") count++
+            if (map.map[y][x] == '~') countStanding++
         }
     }
 
-    println("count = $count iters = $iters")
+    println("count = $count countStanding=$countStanding iters = $iters")
 }
 
 var iters = 0
