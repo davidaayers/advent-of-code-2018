@@ -6,35 +6,72 @@ import readFileIntoLines
 // https://github.com/tginsberg/advent-2018-kotlin/blob/master/src/main/kotlin/com/ginsberg/advent2018/Day17.kt
 // for some help. I tried not to just steal his code, but rather be inspired by it
 fun main(args: Array<String>) {
-    val map = parseInput("/day17/input-small.txt")
+    val map = parseInput("/day17/input.txt")
 
     flow(map.well, map)
+
+    println("Final map:")
+    println(map)
+
+    var count = 0
+    for (y in map.minY until map.maxY) {
+        for (x in map.minX until map.maxX) {
+            if (map.map[y][x] in "|~") count++
+        }
+    }
+
+    println("count = $count iters = $iters")
 }
+
+var iters = 0
 
 // recursive flow
 fun flow(from: Point, map: Map) {
+    iters++
 
-    println(map)
-    println("-----")
+    if (iters % 400 == 0) {
+        println("----- $iters -----")
+        println(map)
+        println("-------------------")
+    }
 
     // if we hit the bottom, bail out
-    val down = from + down
+    val down = from + d_down
+    val left = from + d_left
+    val right = from + d_right
+
     if (down !in map) {
         return
     }
 
-    if (map.isWall(down) || map.isRestingWater(down)) {
-        // fill to the left and right
-        var nextLeft = from + left
-        while (map.isWall(nextLeft)) {
-            map.addFeature(nextLeft,'~')
-        }
-
+    if (map.isEmpty(down)) {
+        map.addFeature(down, '|')
+        flow(down, map)
     }
 
-    if (map.isEmpty(down) || map.isWater(down)) {
-        map.addFeature(down,'|')
-        flow(down, map)
+    if ((map.isWall(down) || map.isRestingWater(down)) && map.isEmpty(left)) {
+        map.addFeature(left, '|')
+        flow(left, map)
+    }
+
+    if ((map.isWall(down) || map.isRestingWater(down)) && map.isEmpty(right)) {
+        map.addFeature(right, '|')
+        flow(right, map)
+    }
+
+    if ((map.isWall(down) || map.isRestingWater(down)) && map.wallsBothWaysFrom(from)) {
+        // fill to the left and d_right
+        var nextLeft = from
+        while (!map.isWall(nextLeft)) {
+            map.addFeature(nextLeft, '~')
+            nextLeft += d_left
+        }
+
+        var nextRight = from
+        while (!map.isWall(nextRight)) {
+            map.addFeature(nextRight, '~')
+            nextRight += d_right
+        }
     }
 }
 
@@ -80,7 +117,7 @@ fun parseInput(fileName: String): Map {
         Mud(startX, endX, startY, endY)
     }
 
-    val map = Map(minX, maxX + 1, minY, maxY)
+    val map = Map(minX, maxX + 2, minY, maxY)
 
     mudLines.forEach { mud ->
         for (y in mud.startY until mud.endY) {
@@ -123,10 +160,6 @@ class Map(val minX: Int, val maxX: Int, val minY: Int, val maxY: Int) {
         return sb.toString()
     }
 
-    fun isWater(point: Point): Boolean {
-        return map[point.y][point.x] == '|'
-    }
-
     fun isEmpty(point: Point): Boolean {
         return map[point.y][point.x] == '.'
     }
@@ -142,12 +175,52 @@ class Map(val minX: Int, val maxX: Int, val minY: Int, val maxY: Int) {
     operator fun contains(point: Point): Boolean {
         return point.x >= 0 && point.x < map[0].size && point.y >= 0 && point.y < map.size
     }
+
+    /*
+    we're looking for a bowl shape
+    #   #
+    #####
+    so, not only does there need to be walls on either side of points, but there
+    has to be walls below it too
+     */
+    fun wallsBothWaysFrom(point: Point): Boolean {
+        val y = point.y
+        var leftX = point.x
+        var rightX = point.x
+        var rightWallFound = false
+
+        var leftWallFound = false
+        while (leftX > 0 && !leftWallFound) {
+            val tile = map[y][leftX]
+            val beneath = map[y + 1][leftX]
+            if (beneath !in "#~") return false
+            when (tile) {
+                in "~.|" -> leftX--
+                '#' -> {
+                    leftWallFound = true
+                }
+            }
+        }
+
+        while (rightX < map[0].size && !rightWallFound) {
+            val tile = map[y][rightX]
+            val beneath = map[y + 1][rightX]
+            if (beneath !in "#~") return false
+            when (tile) {
+                in "~.|" -> rightX++
+                '#' -> {
+                    rightWallFound = true
+                }
+            }
+        }
+
+        return leftWallFound && rightWallFound
+    }
 }
 
-val up = Point(0, -1)
-val down = Point(0, 1)
-val right = Point(1, 0)
-val left = Point(-1, 0)
+val d_down = Point(0, 1)
+val d_right = Point(1, 0)
+val d_left = Point(-1, 0)
 
 data class Point(val x: Int, val y: Int) {
     operator fun plus(other: Point): Point {
