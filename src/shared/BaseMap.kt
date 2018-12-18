@@ -41,6 +41,7 @@ abstract class BaseMap(val width: Int, val height: Int, val bgFill: Char = '#') 
         return sb.toString()
     }
 
+
     protected fun beforeLine(y: Int, line: CharArray, sb: StringBuffer) {
     }
 
@@ -66,5 +67,25 @@ abstract class BaseMap(val width: Int, val height: Int, val bgFill: Char = '#') 
 
     operator fun contains(point: Point): Boolean {
         return point.x >= 0 && point.x < map[0].size && point.y >= 0 && point.y < map.size
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BaseMap
+
+        if (width != other.width) return false
+        if (height != other.height) return false
+        if (!map.contentDeepEquals(other.map)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = width
+        result = 31 * result + height
+        result = 31 * result + map.contentDeepHashCode()
+        return result
     }
 }

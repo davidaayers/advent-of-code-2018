@@ -15,34 +15,55 @@ var rules = listOf(
 )
 
 fun main(args: Array<String>) {
-    var map = MapParser("/day18/input.txt").parse() as Map
-    println("Initial:")
-    println(map)
+    val answer1 = runPuzzle(10) // part 1
+    println("Part 1 answer = $answer1")
 
-    for (minute in 1..10) {
+    val answer2 = runPuzzle(1000000000) // part 2
+    println("Part 2 answer = $answer2")
+}
+
+private fun runPuzzle(numMinutes: Int): Int {
+    var map = MapParser("/day18/input.txt").parse() as Map
+    //println("Initial:")
+    //println(map)
+
+    var prevTotalResources = 0
+
+    val prevGens = mutableListOf(map)
+
+    for (minute in 1..numMinutes) {
         val nextMap = Map(map.width, map.height)
         map.map.forEachIndexed { y, line ->
             line.forEachIndexed { x, c ->
                 rules.forEach { rule ->
                     val point = Point(x, y)
-                    if(rule.applies(point,map)) {
+                    if (rule.applies(point, map)) {
                         val newFeature = rule.evaluate(point, map)
                         nextMap.addFeature(point, newFeature)
                     }
                 }
             }
         }
-        println("After $minute minutes:")
-        println(nextMap)
+        //println("After $minute minutes:")
+        //println(nextMap)
         map = nextMap
+
+        prevTotalResources = map.totalResources()
+
+        //println("Puzzle Answer after minute $minute = $numTrees * $numLumberyards = $totalResources")
+        if (prevGens.contains(nextMap)) {
+            //println("FOUND DUPLICATE...computing answer at $numMinutes")
+            val prevMap = prevGens.indexOf(nextMap)
+            val repeatingSection = prevGens.subList(prevMap, prevGens.size)
+            val slice = (numMinutes - minute) % repeatingSection.size
+            val mapAtSlice = repeatingSection[slice]
+            return mapAtSlice.totalResources()
+        } else {
+            prevGens.add(nextMap)
+        }
     }
 
-    val allTerrain = map.flatten()
-    val numTrees = allTerrain.count { it == trees }
-    val numLumberyards = allTerrain.count { it == lumberyard }
-
-    println("Puzzle Answer = $numTrees * $numLumberyards = ${numTrees * numLumberyards}")
-
+    return prevTotalResources
 }
 
 sealed class Rule {
@@ -101,6 +122,13 @@ sealed class Rule {
 class Map(width: Int, height: Int) : BaseMap(width, height, '.') {
     override fun instantiateMap(width: Int, height: Int, bgChar: Char): BaseMap {
         return Map(width, height)
+    }
+
+    fun totalResources(): Int {
+        val allTerrain = flatten()
+        val numTrees = allTerrain.count { it == trees }
+        val numLumberyards = allTerrain.count { it == lumberyard }
+        return numTrees * numLumberyards
     }
 }
 
