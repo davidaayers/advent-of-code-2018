@@ -3,8 +3,30 @@ package shared
 abstract class BaseMap(val width: Int, val height: Int, val bgFill: Char = '#') {
     val map = Array(height) { CharArray(width) { bgFill } }
 
+    fun addFeature(p: Point, feature: Char) {
+        addFeature(p.x, p.y, feature)
+    }
+
     fun addFeature(x: Int, y: Int, feature: Char) {
         map[y][x] = feature
+    }
+
+    fun feature(p: Point): Char {
+        return feature(p.x, p.y)
+    }
+
+    fun feature(x: Int, y: Int): Char {
+        return map[y][x]
+    }
+
+    fun adjacentTo(p: Point): List<Char> {
+        return p.allDirs().mapNotNull { dir ->
+            if (dir !in this) null else feature(dir)
+        }.toList()
+    }
+
+    fun flatten(): List<Char> {
+        return map.flatMap { line -> line.asList() }.toList()
     }
 
     override fun toString(): String {

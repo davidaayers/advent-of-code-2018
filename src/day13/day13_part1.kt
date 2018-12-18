@@ -111,7 +111,7 @@ data class Cart(val cartId: Int, var x: Int, var y: Int, var dir: Direction, var
 
     fun moveInCurrentDirection(map: Array<CharArray>) {
         moves++
-        // perform the move, but remember the previous square
+        // evaluate the move, but remember the previous square
         val oldChar = map[y][x]
         val oldDir = dir
 
