@@ -8,11 +8,14 @@ fun main(args: Array<String>) {
     println(map)
 }
 
-class Map(width: Int, height: Int) : BaseMap(width, height, '.')
+class Map(width: Int, height: Int) : BaseMap(width, height, '.') {
+    override fun instantiateMap(width: Int, height: Int, bgChar: Char): BaseMap {
+        return Map(width, height)
+    }
+}
 
 class MapParser(fileName: String) : BaseMapParser(fileName) {
     override fun instantiateMap(width: Int, height: Int, bgChar: Char): BaseMap {
         return Map(width, height)
     }
 }
-
