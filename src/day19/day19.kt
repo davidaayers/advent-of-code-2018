@@ -7,13 +7,13 @@ fun main(args: Array<String>) {
 
     val (ipRegister, instructions) = parseInput("/day19/input.txt")
 
-    val registers = intArrayOf(0, 0, 0, 0, 0, 0)
+    val registers = intArrayOf(1, 0, 0, 0, 0, 0)
     var ip = 0
 
     var instructionCnt = 0
     while (true) {
         instructionCnt++
-        if(instructionCnt % 10000000 == 0){
+        if(instructionCnt % 100 == 0){
             println("instructionCnt: $instructionCnt")
         }
         // execute the instruction based on the pointer
@@ -22,11 +22,11 @@ fun main(args: Array<String>) {
         // write the value of the instruction pointer
         registers[ipRegister] = ip
 
-        //print("ip=$ip ${registers.toList()} ")
+        print("ip=$ip ${registers.toList()} ")
 
         opCodes[i.op]?.operate(registers, i.operation())
 
-        //println("${i.op} ${i.a} ${i.b} ${i.c} ${registers.toList()}")
+        println("${i.op} ${i.a} ${i.b} ${i.c} ${registers.toList()}")
 
         // increment the instruction pointer
         ip = registers[ipRegister] + 1
