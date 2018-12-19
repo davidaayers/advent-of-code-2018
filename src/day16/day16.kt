@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
     println("registers = ${registers.toList()}")
 }
 
-private fun part1(): Map<Int, OpCode> {
+fun part1(): Map<Int, OpCode> {
     val allTestData = parsePart1Input("/day16/input.txt")
 
     val mappedOpcodes = mutableMapOf<Int, MutableSet<OpCode>>()
@@ -50,7 +50,7 @@ private fun part1(): Map<Int, OpCode> {
     }
 
     val part1Answer = counts.filter { it >= 3 }.size
-    println("part1Answer = $part1Answer")
+    //println("part1Answer = $part1Answer")
 
     val foundCodes = mutableMapOf<Int, OpCode>()
 
