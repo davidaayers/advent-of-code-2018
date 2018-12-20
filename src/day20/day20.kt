@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
     )
 
     testInputs.forEach { expected, directions ->
-        val answer = buildMap(directions)
+        val (answer, _) = buildMap(directions)
         print("Got $answer for $directions")
         if (answer != expected) {
             println(" <-- Wrong, expected $expected")
@@ -39,13 +39,14 @@ fun main(args: Array<String>) {
         println()
     }
 
-    val answer = buildMap(readEntireFile("/day20/input.txt").trim().substring(1))
+    val (answer, thousandPathRooms) = buildMap(readEntireFile("/day20/input.txt").trim().substring(1))
 
-    println("Got $answer for puzzle input")
+    println("Got $answer for puzzle input, part1")
+    println("Got $thousandPathRooms for puzzle input, part2")
 
 }
 
-private fun buildMap(input: String): Int {
+private fun buildMap(input: String): Pair<Int, Int> {
     val branchPoints = LinkedList<Room>() as Deque<Room>
 
     val start = Room(Point(0, 0))
@@ -54,6 +55,7 @@ private fun buildMap(input: String): Int {
     val ends = mutableListOf<Room>()
 
     var exploringFrom = start
+    var thousandPathRooms = 0
 
     input.forEach { instruction ->
         when (instruction) {
@@ -74,6 +76,17 @@ private fun buildMap(input: String): Int {
                 // link the rooms via doors
                 newRoom.maybeAddDoor(Door(oppositeDirs[instruction]!!, exploringFrom))
                 exploringFrom.maybeAddDoor(Door(instruction, newRoom))
+
+                // new room, path to start and count size
+                if (existingRoom == null) {
+                    // find the path from the start to this room
+                    val newPath = path(newRoom, start)
+                    val size = newPath.size
+                    //println("Path from $newRoom to $start was $size")
+                    if (size >= 1000) {
+                        thousandPathRooms++
+                    }
+                }
 
                 // explore from here
                 exploringFrom = newRoom
@@ -99,7 +112,7 @@ private fun buildMap(input: String): Int {
     val allPaths = ends.map { path(start, it) }
     val longestPath = allPaths.maxBy { it.size }!!
 
-    return longestPath.size
+    return Pair(longestPath.size, thousandPathRooms)
 }
 
 fun renderMap(rooms: List<Room>, currentRoom: Room?) {
