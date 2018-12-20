@@ -19,7 +19,7 @@ val oppositeDirs = mapOf(
 )
 
 fun main(args: Array<String>) {
-    val input = """^ENWWW(NEEE|SSE(EE|N))$""".substring(1)
+    val input = """^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$""".substring(1)
 
     val checkpoints = LinkedList<Room>() as Deque<Room>
 
@@ -30,22 +30,24 @@ fun main(args: Array<String>) {
     var exploringFrom = start
 
     for (instruction in input) {
-        if (instruction in "NSEW") {
-            // add a room in that direction
-            val dir = mapDirs[instruction]!!
-            // move twice in dir to make room for the door between the rooms
-            val newRoom = Room(exploringFrom.point + dir + dir)
-            newRoom.connectingRooms.add(Door(oppositeDirs[instruction]!!, exploringFrom))
-            rooms.add(newRoom)
-            exploringFrom.connectingRooms.add(Door(instruction, newRoom))
-            exploringFrom = newRoom
-        }
-        if (instruction == '(') {
-            break
+        when (instruction) {
+            in "NSEW" -> {
+                // add a room in that direction
+                val dir = mapDirs[instruction]!!
+                // move twice in dir to make room for the door between the rooms
+                val newRoom = Room(exploringFrom.point + dir + dir)
+                newRoom.connectingRooms.add(Door(oppositeDirs[instruction]!!, exploringFrom))
+                rooms.add(newRoom)
+                exploringFrom.connectingRooms.add(Door(instruction, newRoom))
+                exploringFrom = newRoom
+            }
+            '(' -> checkpoints.push(exploringFrom)
+            '|' -> exploringFrom = checkpoints.peek()
+            ')' -> exploringFrom = checkpoints.pop()
         }
     }
 
-    renderMap(rooms, exploringFrom)
+    renderMap(rooms, start)
 }
 
 fun renderMap(rooms: List<Room>, currentRoom: Room?) {
