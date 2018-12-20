@@ -20,34 +20,51 @@ val oppositeDirs = mapOf(
 
 fun main(args: Array<String>) {
     val input = """^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$""".substring(1)
+    //val input = readEntireFile("/day20/input.txt").trim().substring(1)
 
-    val checkpoints = LinkedList<Room>() as Deque<Room>
+    val branchPoints = LinkedList<Room>() as Deque<Room>
 
     val start = Room(Point(0, 0))
 
     val rooms = mutableListOf(start)
+    val ends = mutableListOf<Room>()
 
     var exploringFrom = start
 
-    for (instruction in input) {
+    input.forEach { instruction ->
         when (instruction) {
             in "NSEW" -> {
                 // add a room in that direction
                 val dir = mapDirs[instruction]!!
                 // move twice in dir to make room for the door between the rooms
-                val newRoom = Room(exploringFrom.point + dir + dir)
-                newRoom.connectingRooms.add(Door(oppositeDirs[instruction]!!, exploringFrom))
-                rooms.add(newRoom)
-                exploringFrom.connectingRooms.add(Door(instruction, newRoom))
+                var newRoom = Room(exploringFrom.point + dir + dir)
+
+                // see if this room already exists; if it does, just add a new connection
+                val existingRoom = rooms.find { it == newRoom }
+                if (existingRoom != null) {
+                    newRoom = existingRoom
+                } else {
+                    rooms.add(newRoom)
+                }
+
+                // link the rooms via doors
+                newRoom.maybeAddDoor(Door(oppositeDirs[instruction]!!, exploringFrom))
+                exploringFrom.maybeAddDoor(Door(instruction, newRoom))
+
+                // explore from here
                 exploringFrom = newRoom
             }
-            '(' -> checkpoints.push(exploringFrom)
-            '|' -> exploringFrom = checkpoints.peek()
-            ')' -> exploringFrom = checkpoints.pop()
+            '(' -> branchPoints.push(exploringFrom)
+            '|' -> exploringFrom = branchPoints.peek()
+            ')' -> {
+                ends.add(exploringFrom)
+                exploringFrom = branchPoints.pop()
+            }
         }
     }
 
     renderMap(rooms, start)
+    println("ends = $ends")
 }
 
 fun renderMap(rooms: List<Room>, currentRoom: Room?) {
@@ -80,7 +97,7 @@ fun renderMap(rooms: List<Room>, currentRoom: Room?) {
         //    map.addFeature(it, '?')
         //}
 
-        for (door in room.connectingRooms) {
+        room.connectingRooms.forEach { door ->
             val doorPoint = center + mapDirs[door.dir]!!
             when {
                 door.dir in "NS" -> map.addFeature(doorPoint, '-')
@@ -101,6 +118,12 @@ class Day20Map(width: Int, height: Int) : BaseMap(width, height) {
 
 data class Room(val point: Point) {
     val connectingRooms = mutableListOf<Door>()
+
+    fun maybeAddDoor(door: Door) {
+        if (!connectingRooms.contains(door)) {
+            connectingRooms.add(door)
+        }
+    }
 }
 
 data class Door(val dir: Char, val room: Room)
