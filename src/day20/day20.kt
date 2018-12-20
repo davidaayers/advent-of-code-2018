@@ -1,5 +1,6 @@
 package day20
 
+import readEntireFile
 import shared.BaseMap
 import shared.Point
 import java.util.*
@@ -38,9 +39,9 @@ fun main(args: Array<String>) {
         println()
     }
 
-//    val answer = buildMap(readEntireFile("/day20/input.txt").trim().substring(1))
-//
-//    println("Got $answer for puzzle input")
+    val answer = buildMap(readEntireFile("/day20/input.txt").trim().substring(1))
+
+    println("Got $answer for puzzle input")
 
 }
 
@@ -78,7 +79,10 @@ private fun buildMap(input: String): Int {
                 exploringFrom = newRoom
             }
             '(' -> branchPoints.push(exploringFrom)
-            '|' -> exploringFrom = branchPoints.peek()
+            '|' -> {
+                ends.add(exploringFrom)
+                exploringFrom = branchPoints.peek()
+            }
             ')' -> {
                 ends.add(exploringFrom)
                 exploringFrom = branchPoints.pop()
