@@ -1,5 +1,6 @@
 package day20
 
+import readEntireFile
 import shared.BaseMap
 import shared.Point
 import java.util.*
@@ -19,8 +20,8 @@ val oppositeDirs = mapOf(
 )
 
 fun main(args: Array<String>) {
-    val input = """^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$""".substring(1)
-    //val input = readEntireFile("/day20/input.txt").trim().substring(1)
+    //val input = """^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$""".substring(1)
+    val input = readEntireFile("/day20/input.txt").trim().substring(1)
 
     val branchPoints = LinkedList<Room>() as Deque<Room>
 
@@ -64,7 +65,13 @@ fun main(args: Array<String>) {
     }
 
     renderMap(rooms, start)
-    println("ends = $ends")
+
+    val allPaths = ends.map { path(start, it) }
+    val longestPath = allPaths.maxBy { it.size }!!
+
+    println("longestPath = ${longestPath.size}")
+
+
 }
 
 fun renderMap(rooms: List<Room>, currentRoom: Room?) {
@@ -108,6 +115,59 @@ fun renderMap(rooms: List<Room>, currentRoom: Room?) {
     }
 
     println(map)
+}
+
+fun path(from: Room, to: Room): List<Room> {
+    val visited = mutableSetOf<RoomNode>()
+    val frontier = LinkedList<RoomNode>() as Deque<RoomNode>
+    frontier.add(RoomNode(from.point, from))
+    while (frontier.isNotEmpty()) {
+        val exploring = frontier.poll()
+        if (visited.contains(exploring)) continue
+        visited.add(exploring)
+        if (exploring.point == to.point) {
+            // found it, return the path
+            val path = mutableListOf<Room>()
+
+            var node = exploring
+            while (node.parent != null) {
+                path.add(0, node.room)
+                node = node.parent
+            }
+
+            return path
+        }
+
+        // add all connected rooms to the frontier
+        frontier.addAll(exploring.room.connectingRooms.map {
+            RoomNode(it.room.point, it.room, exploring)
+        })
+    }
+
+    return mutableListOf()
+}
+
+class RoomNode(val point: Point, val room: Room) {
+    var parent: RoomNode? = null
+
+    constructor(location: Point, room: Room, parent: RoomNode? = null) : this(location, room) {
+        this.parent = parent
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as RoomNode
+
+        if (point != other.point) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return point.hashCode()
+    }
 }
 
 class Day20Map(width: Int, height: Int) : BaseMap(width, height) {
