@@ -1,6 +1,5 @@
 package day20
 
-import readEntireFile
 import shared.BaseMap
 import shared.Point
 import java.util.*
@@ -20,9 +19,32 @@ val oppositeDirs = mapOf(
 )
 
 fun main(args: Array<String>) {
-    //val input = """^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$""".substring(1)
-    val input = readEntireFile("/day20/input.txt").trim().substring(1)
+    val testInputs = mapOf(
+        3 to """^WNE$""",
+        10 to """^ENWWW(NEEE|SSE(EE|N))$""",
+        18 to """^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$""",
+        23 to """^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$""",
+        31 to """^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$"""
+    )
 
+    testInputs.forEach { expected, directions ->
+        val answer = buildMap(directions)
+        print("Got $answer for $directions")
+        if (answer != expected) {
+            println(" <-- Wrong, expected $expected")
+        } else {
+            println(" *")
+        }
+        println()
+    }
+
+//    val answer = buildMap(readEntireFile("/day20/input.txt").trim().substring(1))
+//
+//    println("Got $answer for puzzle input")
+
+}
+
+private fun buildMap(input: String): Int {
     val branchPoints = LinkedList<Room>() as Deque<Room>
 
     val start = Room(Point(0, 0))
@@ -64,14 +86,16 @@ fun main(args: Array<String>) {
         }
     }
 
+    if (!ends.contains(exploringFrom)) {
+        ends.add(exploringFrom)
+    }
+
     renderMap(rooms, start)
 
     val allPaths = ends.map { path(start, it) }
     val longestPath = allPaths.maxBy { it.size }!!
 
-    println("longestPath = ${longestPath.size}")
-
-
+    return longestPath.size
 }
 
 fun renderMap(rooms: List<Room>, currentRoom: Room?) {
