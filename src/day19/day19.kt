@@ -1,32 +1,47 @@
 package day19
 
+import day16.OpCode
 import readFileIntoLines
 
 fun main(args: Array<String>) {
-    val opCodes = day16.part1().map { it.value.name to it.value }.toMap()
+    val opCodes = day16.opcodes.map { it.name to it }.toMap()
 
     val (ipRegister, instructions) = parseInput("/day19/input.txt")
 
-    val registers = intArrayOf(1, 0, 0, 0, 0, 0)
+    val registers = intArrayOf(0, 0, 0, 0, 0, 0)
+    val instructionCnt = runInstructions(instructions, registers, ipRegister, opCodes)
+
+    println("Final registers = ${registers.toList()} after $instructionCnt instructions")
+
+}
+
+fun runInstructions(
+    instructions: List<Instruction>,
+    registers: IntArray,
+    ipRegister: Int,
+    opCodes: Map<String, OpCode>,
+    debug: Boolean = false
+): Int {
     var ip = 0
 
     var instructionCnt = 0
     while (true) {
         instructionCnt++
-        if(instructionCnt % 100 == 0){
+        if (instructionCnt % 100 == 0 && debug) {
             println("instructionCnt: $instructionCnt")
         }
+
         // execute the instruction based on the pointer
         val i = instructions[ip]
 
         // write the value of the instruction pointer
         registers[ipRegister] = ip
 
-        print("ip=$ip ${registers.toList()} ")
+        if (debug) print("ip=$ip ${registers.toList()} ")
 
         opCodes[i.op]?.operate(registers, i.operation())
 
-        println("${i.op} ${i.a} ${i.b} ${i.c} ${registers.toList()}")
+        if (debug) println("${i.op} ${i.a} ${i.b} ${i.c} ${registers.toList()}")
 
         // increment the instruction pointer
         ip = registers[ipRegister] + 1
@@ -36,8 +51,7 @@ fun main(args: Array<String>) {
         }
     }
 
-    println("Final registers = ${registers.toList()}")
-
+    return instructionCnt
 }
 
 fun parseInput(fileName: String): Pair<Int, List<Instruction>> {
