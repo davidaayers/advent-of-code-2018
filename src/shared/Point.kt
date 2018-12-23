@@ -27,4 +27,9 @@ data class Point(val x: Int, val y: Int) {
     operator fun plus(other: Point): Point {
         return Point(x + other.x, y + other.y)
     }
+
+    fun manhattanDistanceTo(other: Point): Float {
+        return (Math.abs(other.x - this.x) + Math.abs(other.y - this.y)).toFloat()
+    }
+
 }
