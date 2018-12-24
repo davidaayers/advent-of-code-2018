@@ -14,6 +14,7 @@ abstract class AStarNode<T>(val obj: T) : Comparable<T> {
         return this.cost().compareTo(other.cost())
     }
 
+    abstract fun sameAs(other:AStarNode<T>): Boolean
     abstract fun neighbors(): List<AStarNode<T>>
     abstract fun costToNeighbor(neighbor: AStarNode<T>): Float
     abstract fun estimatedCostToGoal(other: AStarNode<T>): Float

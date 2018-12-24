@@ -14,7 +14,7 @@ class AStarSearch<T> {
         while (frontier.isNotEmpty()) {
             val exploring = frontier.poll()
 
-            if (exploring == goal) {
+            if (exploring.sameAs(goal)) {
                 return constructPathFrom(exploring)
             }
 
@@ -55,6 +55,9 @@ class AStarSearch<T> {
             path.add(0, node)
             node = node.parent!!
         }
+
+        // add the start node, which will be the last node assigned to "node"
+        path.add(0,node)
 
         return path
     }

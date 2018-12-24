@@ -22,7 +22,7 @@ val nothing = Tool("Nothing", "$wet$narrow")
 val tools = listOf(
     climbingGear,
     torch,
-    nothing
+    nothing 
 )
 
 fun main(args: Array<String>) {
@@ -33,6 +33,7 @@ fun main(args: Array<String>) {
 //    println("Part 1 answer is $puzzleAnswer")
 
     findPath(510, Point(10, 10))
+    //findPath(9171, Point(7, 721))
 }
 
 fun calcTotalRisk(depth: Int, target: Point): Int {
@@ -59,23 +60,26 @@ fun findPath(depth: Int, target: Point) {
 
     val search = AStarSearch<Point>()
 
-    val path = search.findPath(start, end).map { it.obj }
+    val path = search.findPath(start, end)
 
-    println("path = $path")
+    val cost = path.last().costFromStart
 
-    println("$cave")
+
+    //println("$cave")
 
     path.forEach {
-        cave.addFeature(it, 'X')
+        cave.addFeature(it.obj, 'X')
     }
 
     println("$cave")
+    println("cost = $cost, path = $path")
+
 }
 
 fun generateCave(depth: Int, target: Point): Cave {
 
-    val width = target.x * 2
-    val height = target.y * 2
+    val width = target.x * 3
+    val height = target.y + 30
 
     val erosionLevels = Array(height) { IntArray(width) { 0 } }
 
@@ -118,6 +122,10 @@ class Cave(width: Int, height: Int) : BaseMap(width, height, '.') {
 }
 
 class CaveNode(val point: Point, val cave: Cave, val tool: Tool?) : AStarNode<Point>(point) {
+    override fun sameAs(other: AStarNode<Point>): Boolean {
+        return this.obj == other.obj
+    }
+
     override fun neighbors(): List<AStarNode<Point>> {
 
         val neighbors = mutableListOf<AStarNode<Point>>()
@@ -137,7 +145,7 @@ class CaveNode(val point: Point, val cave: Cave, val tool: Tool?) : AStarNode<Po
 
     override fun costToNeighbor(neighbor: AStarNode<Point>): Float {
         neighbor as CaveNode
-        return if (this.tool == neighbor.tool) 1F else 7F
+        return if (this.tool == neighbor.tool) 1F else 8F
     }
 
     override fun estimatedCostToGoal(other: AStarNode<Point>): Float {
@@ -151,13 +159,17 @@ class CaveNode(val point: Point, val cave: Cave, val tool: Tool?) : AStarNode<Po
         other as CaveNode
 
         if (point != other.point) return false
+        if (tool != other.tool) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return 31 * point.hashCode()
+        var result = 31 * point.hashCode()
+        result = 31 * result + (tool?.hashCode() ?: 0)
+        return result
     }
+
 }
 
 data class Tool(val name: String, val validRegions: String)
