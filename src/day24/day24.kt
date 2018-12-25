@@ -33,6 +33,7 @@ fun main(args: Array<String>) {
             allArmies
                 .filter { it.side != army.side }
                 .filter { it !in alreadyTargeted }
+                .filter { it.estimateDamageBy(army) > 0 }
                 .sortedWith(
                     compareByDescending<Army> { it.estimateDamageBy(army) }
                         .thenByDescending { it.size * it.attackValue }
