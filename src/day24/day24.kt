@@ -72,7 +72,11 @@ fun main(args: Array<String>) {
 
         if (armiesLeft.size == 1) {
             val totalUnitsLeft = allArmies.sumBy { it.size }
-            println("All armies left: $allArmies")
+            println("---> Final $round status --->")
+            allArmies.forEach {
+                println(it.desc())
+            }
+
             println("totalUnitsLeft = $totalUnitsLeft")
             endCombat = true
         }
@@ -92,7 +96,7 @@ fun testData(): Pair<List<Army>, List<Army>> {
         weaknesses.add(AttackTypes.BLUDGEONING)
     }
 
-    val is2 = Army(Side.IMMUNE_SYSTEM, 2, 989, 1274, AttackTypes.SLASHING, 24, 3).apply {
+    val is2 = Army(Side.IMMUNE_SYSTEM, 2, 989, 1274, AttackTypes.SLASHING, 25, 3).apply {
         immunities.add(AttackTypes.FIRE)
         weaknesses.add(AttackTypes.BLUDGEONING)
         weaknesses.add(AttackTypes.SLASHING)
