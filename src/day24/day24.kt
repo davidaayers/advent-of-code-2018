@@ -1,6 +1,22 @@
 package day24
 
 fun main(args: Array<String>) {
+    //part1()
+    part2()
+}
+
+private fun part1() {
+    //val (immuneArmies, infectionArmies) = testData()
+    val (immuneArmies, infectionArmies) = actualData()
+    val allArmies = mutableListOf<Army>().apply {
+        addAll(immuneArmies)
+        addAll(infectionArmies)
+    }
+
+    doCombat(allArmies, true)
+}
+
+private fun part2() {
     //val (immuneArmies, infectionArmies) = testData()
     val (immuneArmies, infectionArmies) = actualData()
     val allArmies = mutableListOf<Army>().apply {
@@ -12,9 +28,7 @@ fun main(args: Array<String>) {
     var boost = 0
     while (!immuneSystemWon) {
         println("boost = ${boost}")
-        val copies = allArmies
-            .map { it.copy() }
-            .toMutableList()
+        val copies = copyArmies(allArmies)
 
         copies
             .filter { it.side == Side.IMMUNE_SYSTEM }
@@ -24,23 +38,34 @@ fun main(args: Array<String>) {
 
         val allArmiesLeft = doCombat(copies, false)
         val armiesLeft = allArmiesLeft.groupingBy { it.side }.eachCount()
-        if (armiesLeft[Side.IMMUNE_SYSTEM] != null && boost != 36) {
+        if (armiesLeft.size == 1 && armiesLeft[Side.IMMUNE_SYSTEM] != null) {
             val totalUnitsLeft = allArmiesLeft.sumBy { it.size }
             println("Immune system won with boost of $boost, total armies left $totalUnitsLeft")
             break
         }
         boost += 1
     }
+}
 
-
+private fun copyArmies(allArmies: MutableList<Army>): MutableList<Army> {
+    val copies = allArmies
+        .map {
+            val copy = it.copy()
+            copy.weaknesses.addAll(it.weaknesses)
+            copy.immunities.addAll(it.immunities)
+            copy
+        }
+        .toMutableList()
+    return copies
 }
 
 private fun doCombat(allArmies: MutableList<Army>, debug: Boolean = false): MutableList<Army> {
     var round = 1
+    var lastArmiesLeft = mutableListOf<Army>()
     while (true) {
         if (debug) println("---> Round $round start, status --->")
         allArmies.forEach {
-            if (debug) println(it.desc())
+            if (debug) println(it)
         }
 
         // targeting first
@@ -57,7 +82,7 @@ private fun doCombat(allArmies: MutableList<Army>, debug: Boolean = false): Muta
         for (army in choseTargetOrder) {
             // find a target
             if (debug) print("Choosing Target for = ${army.desc()}")
-            allArmies
+            val attacker = allArmies
                 .filter { it.side != army.side }
                 .filter { it !in alreadyTargeted }
                 .filter { it.estimateDamageBy(army) > 0 }
@@ -65,13 +90,15 @@ private fun doCombat(allArmies: MutableList<Army>, debug: Boolean = false): Muta
                     compareByDescending<Army> { it.estimateDamageBy(army) }
                         .thenByDescending { it.size * it.attackValue }
                         .thenByDescending { it.initiative }
-                ).firstOrNull().let {
-                    if (it != null) {
-                        if (debug) println(", chose = ${it.desc()}")
-                        battles.add(Pair(army, it))
-                        alreadyTargeted.add(it)
-                    }
-                }
+                ).firstOrNull()
+
+            if (attacker != null) {
+                if (debug) println(", chose = ${attacker.desc()}")
+                battles.add(Pair(army, attacker))
+                alreadyTargeted.add(attacker)
+            } else {
+                if (debug) println(", CHOSE NONE")
+            }
         }
 
         if (debug) println("----> Target selection complete <----")
@@ -92,6 +119,13 @@ private fun doCombat(allArmies: MutableList<Army>, debug: Boolean = false): Muta
 
         // if one side is dead, end combat
         val armiesLeft = allArmies.groupingBy { it.side }.eachCount()
+
+        if (lastArmiesLeft == allArmies) {
+            println("Detected stalemate, no one wins")
+            return allArmies
+        }
+
+        lastArmiesLeft = copyArmies(allArmies)
 
         //println("armiesLeft = ${armiesLeft}\n\n")
         if (debug) println("\n")
@@ -298,7 +332,7 @@ data class Army(
     val weaknesses = mutableListOf<AttackTypes>()
 
     fun desc(): String {
-        return "$side group $id ($size units, $hp hp)"
+        return "$side group $id ($size units, $hp hp, ${size * attackValue} eff power)"
     }
 
     fun estimateDamageBy(otherArmy: Army): Int {
