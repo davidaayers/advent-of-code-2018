@@ -22,9 +22,9 @@ fun main(args: Array<String>) {
                 it.attackValue += boost
             }
 
-        val allArmiesLeft = doCombat(copies, boost == 36)
+        val allArmiesLeft = doCombat(copies, false)
         val armiesLeft = allArmiesLeft.groupingBy { it.side }.eachCount()
-        if (armiesLeft[Side.IMMUNE_SYSTEM] != null) {
+        if (armiesLeft[Side.IMMUNE_SYSTEM] != null && boost != 36) {
             val totalUnitsLeft = allArmiesLeft.sumBy { it.size }
             println("Immune system won with boost of $boost, total armies left $totalUnitsLeft")
             break
