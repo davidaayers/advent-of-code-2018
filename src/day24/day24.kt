@@ -8,16 +8,43 @@ fun main(args: Array<String>) {
         addAll(infectionArmies)
     }
 
-    var endCombat = false
+    val immuneSystemWon = false
+    var boost = 0
+    while (!immuneSystemWon) {
+        println("boost = ${boost}")
+        val copies = allArmies
+            .map { it.copy() }
+            .toMutableList()
+
+        copies
+            .filter { it.side == Side.IMMUNE_SYSTEM }
+            .forEach {
+                it.attackValue += boost
+            }
+
+        val allArmiesLeft = doCombat(copies, boost == 36)
+        val armiesLeft = allArmiesLeft.groupingBy { it.side }.eachCount()
+        if (armiesLeft[Side.IMMUNE_SYSTEM] != null) {
+            val totalUnitsLeft = allArmiesLeft.sumBy { it.size }
+            println("Immune system won with boost of $boost, total armies left $totalUnitsLeft")
+            break
+        }
+        boost += 1
+    }
+
+
+}
+
+private fun doCombat(allArmies: MutableList<Army>, debug: Boolean = false): MutableList<Army> {
     var round = 1
-    while (!endCombat) {
-        println("---> Round $round start, status --->")
+    while (true) {
+        if (debug) println("---> Round $round start, status --->")
         allArmies.forEach {
-            println(it.desc())
+            if (debug) println(it.desc())
         }
 
         // targeting first
-        println("----> Starting Target Selection, Round $round <----")
+        if (debug) println("----> Starting Target Selection, Round $round <----")
         val alreadyTargeted = mutableListOf<Army>()
         val battles = mutableListOf<Pair<Army, Army>>()
 
@@ -29,7 +56,7 @@ fun main(args: Array<String>) {
 
         for (army in choseTargetOrder) {
             // find a target
-            print("Choosing Target for = ${army.desc()}")
+            if (debug) print("Choosing Target for = ${army.desc()}")
             allArmies
                 .filter { it.side != army.side }
                 .filter { it !in alreadyTargeted }
@@ -40,29 +67,26 @@ fun main(args: Array<String>) {
                         .thenByDescending { it.initiative }
                 ).firstOrNull().let {
                     if (it != null) {
-                        println(", chose = ${it.desc()}")
+                        if (debug) println(", chose = ${it.desc()}")
                         battles.add(Pair(army, it))
                         alreadyTargeted.add(it)
-                    } else {
-                        println(", NO TARGET CHOSEN")
                     }
-
                 }
         }
 
-        println("----> Target selection complete <----")
+        if (debug) println("----> Target selection complete <----")
 
-        println("----> Starting Battle round <----")
+        if (debug) println("----> Starting Battle round <----")
         // now resolve the battles
         battles
             .sortedWith(compareByDescending { it.first.initiative })
             .forEach { pair ->
                 val attacker = pair.first
                 val defender = pair.second
-                defender.attackedBy(attacker)
+                defender.attackedBy(attacker, debug)
             }
 
-        println("----> Battle round complete <----")
+        if (debug) println("----> Battle round complete <----")
 
         allArmies.removeIf { it.size == 0 }
 
@@ -70,17 +94,17 @@ fun main(args: Array<String>) {
         val armiesLeft = allArmies.groupingBy { it.side }.eachCount()
 
         //println("armiesLeft = ${armiesLeft}\n\n")
-        println("\n")
+        if (debug) println("\n")
 
         if (armiesLeft.size == 1) {
             val totalUnitsLeft = allArmies.sumBy { it.size }
-            println("---> Final $round status --->")
+            if (true) println("---> Final $round status --->")
             allArmies.forEach {
-                println(it.desc())
+                if (true) println(it.desc())
             }
 
-            println("totalUnitsLeft = $totalUnitsLeft")
-            endCombat = true
+            if (true) println("totalUnitsLeft = $totalUnitsLeft")
+            return allArmies
         }
         round++
     }
@@ -267,7 +291,7 @@ data class Army(
     var size: Int,
     val hp: Int,
     val attackType: AttackTypes,
-    val attackValue: Int,
+    var attackValue: Int,
     val initiative: Int
 ) {
     val immunities = mutableListOf<AttackTypes>()
@@ -285,7 +309,7 @@ data class Army(
         return if (otherArmy.attackType in weaknesses) totalDmg * 2 else totalDmg
     }
 
-    fun attackedBy(otherArmy: Army): Int {
+    fun attackedBy(otherArmy: Army, debug: Boolean = false): Int {
         val dmg = estimateDamageBy(otherArmy)
 
         if (dmg == 0) return 0
@@ -296,7 +320,7 @@ data class Army(
 
         size -= numKilled
 
-        println("${otherArmy.desc()} attacks ${this.desc()}, killing $numKilled units with $dmg damage")
+        if (debug) println("${otherArmy.desc()} attacks ${this.desc()}, killing $numKilled units with $dmg damage")
 
         return numKilled
     }
