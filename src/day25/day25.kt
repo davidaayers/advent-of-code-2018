@@ -3,31 +3,53 @@ package day25
 import readFileIntoLines
 
 fun main(args: Array<String>) {
-    if (findAllConstellations(parseData("/day25/input-small1.txt")).size != 2) {
+    if (find(parseData("/day25/input-small1.txt")).size != 2) {
         throw IllegalStateException()
     }
-    if (findAllConstellations(parseData("/day25/input-small2.txt")).size != 4) {
+    if (find(parseData("/day25/input-small2.txt")).size != 4) {
         throw IllegalStateException()
     }
-    val constellations = findAllConstellations(parseData("/day25/input-small3.txt"))
-    if (constellations.size != 3) {
+    if (find(parseData("/day25/input-small3.txt")).size != 3) {
         throw IllegalStateException()
     }
+
+    val answer = find(parseData("/day25/input.txt")).size
+    println("answer = ${answer}")
 
 }
 
-private fun findAllConstellations(points: List<Point4d>): MutableList<Constellation> {
-    val constellations = mutableListOf<Constellation>()
+private fun find(points: List<Point4d>): MutableList<Constellation> {
+    return findConstellations(findNeighbors(points))
+}
 
-    points.forEach { point ->
-        val existing = constellations.find { point in it }
-        if (existing != null) {
-            existing.points.add(point)
-        } else {
-            constellations.add(Constellation().apply { this.points.add(point) })
+private fun findConstellations(neighbors: MutableMap<Point4d, List<Point4d>>): MutableList<Constellation> {
+    val allPoints = neighbors.keys.toMutableList()
+    val allConstellations = mutableListOf<Constellation>()
+    while (allPoints.isNotEmpty()) {
+        val currentPoint = allPoints.removeAt(0)
+        val con = Constellation().apply { this.points.add(currentPoint) }
+        val exploring = ArrayList<Point4d>(neighbors.getValue(currentPoint))
+        while (exploring.isNotEmpty()) {
+            val nextNeighbor = exploring.removeAt(0)
+            allPoints.remove(nextNeighbor)
+            con.points.add(nextNeighbor)
+            exploring.addAll(neighbors.getValue(nextNeighbor).filter { it !in con })
         }
+        allConstellations.add(con)
     }
-    return constellations
+
+    return allConstellations
+}
+
+private fun findNeighbors(points: List<Point4d>): MutableMap<Point4d, List<Point4d>> {
+    val neighbors = mutableMapOf<Point4d, List<Point4d>>()
+    points.forEach { point ->
+        neighbors[point] = points
+            .filter { it != point }
+            .filter { it.manhattanDistanceTo(point) <= 3 }
+            .toList()
+    }
+    return neighbors
 }
 
 fun parseData(fileName: String): List<Point4d> {
@@ -49,11 +71,7 @@ data class Point4d(val x: Int, val y: Int, val z: Int, val t: Int) {
 
 class Constellation {
     val points = mutableListOf<Point4d>()
-
-    // a point is "in" the constellation if at least one of the
-    // other points is within manhattan distance of 3
     operator fun contains(point: Point4d): Boolean {
-        return points.any { it.manhattanDistanceTo(point) <= 3 }
+        return points.contains(point)
     }
-
 }
